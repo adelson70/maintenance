@@ -36,19 +36,19 @@ def obter_nome_unidades():
 # Função para obter o armazenamento das unidades
 def verificar_armazenamento(unidade_var, label_info):
     # Ira receber o nome da unidade
-    unidade = unidade_var.get()
+    try:
+        unidade = unidade_var.get()
 
-    disco = psutil.disk_usage(unidade)
-    espaco_total = disco.total/1073741824
-    espaco_usado = disco.used/1073741824
-    espaco_livre = disco.free/1073741824
+        disco = psutil.disk_usage(unidade)
+        espaco_total = disco.total/1073741824
+        espaco_usado = disco.used/1073741824
+        espaco_livre = disco.free/1073741824
 
-    info = f"Armazenamento da Unidade {unidade}\n\nEspaço Total: {espaco_total:.2f} GB\nEspaço Usado: {espaco_usado:.2f} GB\nEspaço Livre: {espaco_livre:.2f} GB"
+        info = f"Armazenamento da Unidade {unidade}\n\nEspaço Total: {espaco_total:.2f} GB\nEspaço Usado: {espaco_usado:.2f} GB\nEspaço Livre: {espaco_livre:.2f} GB"
+        atualizar_label(label_info, info)
 
-    #nome_unidade = obter_nome_unidades()
-    
-    #atualzar_label(titulo_label_info, f'')
-    atualizar_label(label_info, info)
+    except FileNotFoundError:
+        messagebox.showerror('Unidade não selecionada','Você não selecionou nenhuma unidade')
 
 def caixa_selecoes_unidades():
     frame_caixa_selecao = ttk.Frame(janela)
@@ -92,7 +92,10 @@ info_label = tk.Label(janela, text='')
 info_label.pack(pady=10)
 
 # Botão para verificar o armazenamento da unidade selecionada
+
 botao_armazenamento = tk.Button(janela, text='Armazenamento', command=lambda: verificar_armazenamento(unidade_var, info_label))
 botao_armazenamento.pack(pady=10)
+
+
 
 janela.mainloop()
