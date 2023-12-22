@@ -68,8 +68,10 @@ def atualizar_label(label, info):
 janela = tk.Tk()
 janela.title(f'Maintence {version}')
 
+# Definindo altura x largura
+
 # Label para escolher a unidade
-tk.Label(janela, text='Escolha uma unidade').pack(pady=10)
+principal = tk.Label(janela, text='Escolha uma unidade').pack(pady=10)
 unidade_var = caixa_selecoes_unidades()
 
 # label para o titulo referente das informações
