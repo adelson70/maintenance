@@ -69,6 +69,13 @@ janela = tk.Tk()
 janela.title(f'Maintence {version}')
 
 # Definindo altura x largura
+largura = 250
+altura = 300
+
+janela.geometry(f'{largura}x{altura}')
+
+# Impedir o usuário de redimensionar a janela
+janela.resizable(width=False, height=False)
 
 # Label para escolher a unidade
 principal = tk.Label(janela, text='Escolha uma unidade').pack(pady=10)
