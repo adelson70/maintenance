@@ -75,7 +75,17 @@ janela.title(f'Maintence {version}')
 largura = 250
 altura = 300
 
-janela.geometry(f'{largura}x{altura}')
+# Centralizando a janela em referencia a tela do computador do usuario
+# Obtém as dimensões da tela
+largura_tela = janela.winfo_screenwidth()
+altura_tela = janela.winfo_screenheight()
+
+# Calcula as coordenadas x e y para centralizar a janela
+x = (largura_tela - largura) // 2
+y = (altura_tela - altura) // 2
+
+# Define a geometria da janela para centralizá-la
+janela.geometry(f"{largura}x{altura}+{x}+{y-150}")
 
 # Impedir o usuário de redimensionar a janela
 janela.resizable(width=False, height=False)
