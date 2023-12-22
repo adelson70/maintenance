@@ -30,17 +30,20 @@ def obter_nome_unidades():
     for unidade in unidades:
         nome_unidades.append(unidade.device)
 
+    # retorna o objeto
     return nome_unidades
 
 # Função para obter o armazenamento das unidades
 def verificar_armazenamento(unidade_var, label_info):
+    # Ira receber o nome da unidade
     unidade = unidade_var.get()
+
     disco = psutil.disk_usage(unidade)
     espaco_total = disco.total/1073741824
     espaco_usado = disco.used/1073741824
     espaco_livre = disco.free/1073741824
 
-    info = f"Espaço Total: {espaco_total:.2f} GB\nEspaço Usado: {espaco_usado:.2f} GB\nEspaço Livre: {espaco_livre:.2f} GB"
+    info = f"Armazenamento da Unidade {unidade}\n\nEspaço Total: {espaco_total:.2f} GB\nEspaço Usado: {espaco_usado:.2f} GB\nEspaço Livre: {espaco_livre:.2f} GB"
 
     #nome_unidade = obter_nome_unidades()
     
