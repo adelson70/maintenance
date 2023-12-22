@@ -1,3 +1,4 @@
+# bibliotecas a serem utilizadas
 import tkinter as tk
 from tkinter import ttk
 from tkinter.font import Font
