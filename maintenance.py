@@ -6,6 +6,7 @@ from tkinter import messagebox
 import subprocess
 from os import system
 import psutil
+import threading
 
 version = '1.0'
 
@@ -33,6 +34,11 @@ def obter_nome_unidades():
 
     # retorna o objeto
     return nome_unidades
+
+# Função executada em uma thread
+# Para que a janela principal do tkinter ainda fique responsiva!
+def trhead_geral(funcao):
+    threading.Thread(target=funcao).start()
 
 # Função para obter o armazenamento das unidades
 def verificar_armazenamento(unidade_var, label_info):
@@ -75,6 +81,8 @@ def limpeza_disco(unidade,label):
     except:
         messagebox.showerror('Unidade não selecionada','Você não selecionou nenhuma unidade!')
 
+
+# Função para acessar o serviço de gerenciamento de disco
 def gerenciamento_disco():
     global info_label
     global titulo_label_info
@@ -143,15 +151,15 @@ info_label = tk.Label(janela, text='')
 info_label.pack(pady=10)
 
 # Botão para verificar o armazenamento da unidade selecionada
-botao_armazenamento = tk.Button(janela, text='Armazenamento', command=lambda: verificar_armazenamento(unidade_var, info_label))
+botao_armazenamento = tk.Button(janela, text='Armazenamento', command=lambda: trhead_geral(verificar_armazenamento(unidade_var, info_label)))
 botao_armazenamento.pack(pady=10)
 
 # Botão para acessar o gerenciador de disco - diskmgmt.msc
-botao_gerenciador = tk.Button(janela, text='Gerenciador', command=lambda: gerenciamento_disco())
+botao_gerenciador = tk.Button(janela, text='Gerenciador', command=lambda: trhead_geral(gerenciamento_disco))
 botao_gerenciador.pack(pady=10)
 
 # Botão para fazer uma limpeza de disco - cleanmgr.exe
-botao_limpeza_disco = tk.Button(janela, text='Limpeza de Disco', command=lambda: verificar_armazenamento(unidade_var, info_label))
+botao_limpeza_disco = tk.Button(janela, text='Limpeza de Disco', command=lambda: trhead_geral(limpeza_disco(unidade_var, info_label)))
 botao_limpeza_disco.pack(pady=10)
 
 janela.mainloop()
