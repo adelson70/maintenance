@@ -6,13 +6,9 @@ from tkinter import messagebox
 import subprocess
 from os import system
 import psutil
-from time import sleep
 
 version = '1.0'
 
-# Função de espera
-def esperar(tempo=1):
-    sleep(tempo)
 
 # Função para encontrar as unidades locais
 def obter_unidades():
@@ -78,6 +74,18 @@ def limpeza_disco(unidade,label):
         
     except:
         messagebox.showerror('Unidade não selecionada','Você não selecionou nenhuma unidade!')
+
+def gerenciamento_disco():
+    global info_label
+    global titulo_label_info
+
+    # Atualiza Label
+    atualizar_label(info_label,'')
+    atualizar_label(titulo_label_info,'')
+
+    # Executa o gerenciador de disco
+    subprocess.run(['mmc.exe', 'diskmgmt.msc'], check=True)
+
     
 
 # Função que ira criar uma caixa de seleção referente as unidades instaladas
@@ -138,8 +146,12 @@ info_label.pack(pady=10)
 botao_armazenamento = tk.Button(janela, text='Armazenamento', command=lambda: verificar_armazenamento(unidade_var, info_label))
 botao_armazenamento.pack(pady=10)
 
-# Botão para fazer uma limpeza de disco
-botao_limpeza_disco = tk.Button(janela, text='Limpeza de Disco', command=lambda: limpeza_disco(unidade_var,info_label))
+# Botão para acessar o gerenciador de disco - diskmgmt.msc
+botao_gerenciador = tk.Button(janela, text='Gerenciador', command=lambda: gerenciamento_disco())
+botao_gerenciador.pack(pady=10)
+
+# Botão para fazer uma limpeza de disco - cleanmgr.exe
+botao_limpeza_disco = tk.Button(janela, text='Limpeza de Disco', command=lambda: verificar_armazenamento(unidade_var, info_label))
 botao_limpeza_disco.pack(pady=10)
 
 janela.mainloop()
