@@ -48,8 +48,10 @@ def verificar_armazenamento(unidade_var, label_info):
         atualizar_label(label_info, info)
 
     except FileNotFoundError:
-        messagebox.showerror('Unidade não selecionada','Você não selecionou nenhuma unidade')
+        messagebox.showerror('Unidade não selecionada','Você não selecionou nenhuma unidade!')
 
+# Função que ira criar uma caixa de seleção referente as unidades instaladas
+# Instaladas no computador do usuário
 def caixa_selecoes_unidades():
     frame_caixa_selecao = ttk.Frame(janela)
     frame_caixa_selecao.pack()
@@ -61,7 +63,7 @@ def caixa_selecoes_unidades():
     tamanho_caixa_selecao = 20
     combo = ttk.Combobox(frame_caixa_selecao, textvariable=combo_var, state="readonly", values=unidades_ordenadas, width=tamanho_caixa_selecao)
     combo.pack(pady=5)
-
+    
     return combo_var
 
 def atualizar_label(label, info):
