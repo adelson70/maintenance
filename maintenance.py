@@ -6,8 +6,13 @@ from tkinter import messagebox
 import subprocess
 from os import system
 import psutil
+from time import sleep
 
 version = '1.0'
+
+# Função de espera
+def esperar(tempo=1):
+    sleep(tempo)
 
 # Função para encontrar as unidades locais
 def obter_unidades():
@@ -39,6 +44,9 @@ def verificar_armazenamento(unidade_var, label_info):
     try:
         unidade = unidade_var.get()
 
+        # print(unidade)
+        # print(type(unidade))
+
         disco = psutil.disk_usage(unidade)
         espaco_total = disco.total/1073741824
         espaco_usado = disco.used/1073741824
@@ -49,6 +57,28 @@ def verificar_armazenamento(unidade_var, label_info):
 
     except FileNotFoundError:
         messagebox.showerror('Unidade não selecionada','Você não selecionou nenhuma unidade!')
+
+# Função que ira chamar o serviço do windows de limpeza de disco
+def limpeza_disco(unidade,label):
+    
+    unidade = unidade.get()
+
+
+    try:
+        # apenas para tratamento de erro
+        disco = psutil.disk_usage(unidade)
+
+        # Executa o serviço do windows de limpeza de disco
+        subprocess.run(['cleanmgr.exe', '/d', unidade, '/sagerun:1'])
+
+        # atualiza a label
+        label_info = label
+        info = f'Limpeza da Unidade {unidade} foi concluída!'
+        atualizar_label(label_info,info)
+        
+    except:
+        messagebox.showerror('Unidade não selecionada','Você não selecionou nenhuma unidade!')
+    
 
 # Função que ira criar uma caixa de seleção referente as unidades instaladas
 # Instaladas no computador do usuário
@@ -63,8 +93,9 @@ def caixa_selecoes_unidades():
     tamanho_caixa_selecao = 20
     combo = ttk.Combobox(frame_caixa_selecao, textvariable=combo_var, state="readonly", values=unidades_ordenadas, width=tamanho_caixa_selecao)
     combo.pack(pady=5)
-    
+
     return combo_var
+
 
 def atualizar_label(label, info):
     label.config(text=info)
@@ -96,18 +127,19 @@ janela.resizable(width=False, height=False)
 principal = tk.Label(janela, text='Escolha uma unidade').pack(pady=10)
 unidade_var = caixa_selecoes_unidades()
 
+# label principal das infos que surgirão
 # label para o titulo referente das informações
 titulo_label_info = tk.Label(janela, text='')
-
 # Label para exibir informações
 info_label = tk.Label(janela, text='')
 info_label.pack(pady=10)
 
 # Botão para verificar o armazenamento da unidade selecionada
-
 botao_armazenamento = tk.Button(janela, text='Armazenamento', command=lambda: verificar_armazenamento(unidade_var, info_label))
 botao_armazenamento.pack(pady=10)
 
-
+# Botão para fazer uma limpeza de disco
+botao_limpeza_disco = tk.Button(janela, text='Limpeza de Disco', command=lambda: limpeza_disco(unidade_var,info_label))
+botao_limpeza_disco.pack(pady=10)
 
 janela.mainloop()
