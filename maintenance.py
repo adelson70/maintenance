@@ -10,6 +10,23 @@ import threading
 
 version = '1.0'
 
+# Função para ajustar a janela principal conforme o conteudo que estiver nela
+def ajustar_janela_ao_conteudo(root):
+    root.update_idletasks()  # Atualiza a geometria da janela
+    largura = root.winfo_reqwidth()  # Largura requisitada pelo conteúdo
+    altura = root.winfo_reqheight()  # Altura requisitada pelo conteúdo
+
+    # Obtém as dimensões da tela
+    largura_tela = root.winfo_screenwidth()
+    altura_tela = root.winfo_screenheight()
+
+    # Calcula a posição para centralizar a janela
+    x_pos = (largura_tela - largura) // 2
+    y_pos = (altura_tela - altura) // 2
+
+    # Define a geometria da janela
+    root.geometry(f"{largura+100}x{altura}+{x_pos}+{y_pos-130}")
+
 
 # Função para encontrar as unidades locais
 def obter_unidades():
@@ -42,6 +59,7 @@ def trhead_geral(funcao):
 
 # Função para obter o armazenamento das unidades
 def verificar_armazenamento(unidade_var, label_info):
+    global titulo_label_info
     # Ira receber o nome da unidade
     try:
         unidade = unidade_var.get()
@@ -54,21 +72,27 @@ def verificar_armazenamento(unidade_var, label_info):
         espaco_usado = disco.used/1073741824
         espaco_livre = disco.free/1073741824
 
-        info = f"Armazenamento da Unidade {unidade}\n\nEspaço Total: {espaco_total:.2f} GB\nEspaço Usado: {espaco_usado:.2f} GB\nEspaço Livre: {espaco_livre:.2f} GB"
+        info = f"Espaço Total: {espaco_total:.2f} GB\nEspaço Usado: {espaco_usado:.2f} GB\nEspaço Livre: {espaco_livre:.2f} GB"
+        
+        atualizar_label(titulo_label_info,f'Armazenamento da Unidade {unidade}\n')
         atualizar_label(label_info, info)
+        #ajustar_janela_ao_conteudo(janela)
 
     except FileNotFoundError:
         messagebox.showerror('Unidade não selecionada','Você não selecionou nenhuma unidade!')
 
 # Função que ira chamar o serviço do windows de limpeza de disco
 def limpeza_disco(unidade,label):
+    global titulo_label_info
+    atualizar_label(titulo_label_info,'Status')
     
     unidade = unidade.get()
-
 
     try:
         # apenas para tratamento de erro
         disco = psutil.disk_usage(unidade)
+
+        atualizar_label(label,f'Limpando Unidade {unidade}')
 
         # Executa o serviço do windows de limpeza de disco
         subprocess.run(['cleanmgr.exe', '/d', unidade, '/sagerun:1'])
@@ -86,14 +110,16 @@ def limpeza_disco(unidade,label):
 def gerenciamento_disco():
     global info_label
     global titulo_label_info
+    atualizar_label(titulo_label_info,'Status')
+   # ajustar_janela_ao_conteudo(janela)
 
     # Atualiza Label
-    atualizar_label(info_label,'')
-    atualizar_label(titulo_label_info,'')
+    atualizar_label(info_label,'Gerenciamento de Disco Aberto')
 
     # Executa o gerenciador de disco
-    subprocess.run(['mmc.exe', 'diskmgmt.msc'], check=True)
+    subprocess.run(['mmc.exe', 'diskmgmt.msc'], check=True, shell=True)
 
+    atualizar_label(info_label,'')
     
 
 # Função que ira criar uma caixa de seleção referente as unidades instaladas
@@ -106,7 +132,7 @@ def caixa_selecoes_unidades():
     unidades = obter_nome_unidades()
     
     unidades_ordenadas = sorted(unidades)
-    tamanho_caixa_selecao = 20
+    tamanho_caixa_selecao = 5
     combo = ttk.Combobox(frame_caixa_selecao, textvariable=combo_var, state="readonly", values=unidades_ordenadas, width=tamanho_caixa_selecao)
     combo.pack(pady=5)
 
@@ -115,51 +141,46 @@ def caixa_selecoes_unidades():
 
 def atualizar_label(label, info):
     label.config(text=info)
+    ajustar_janela_ao_conteudo(janela)
+    janela.update
 
 # Criando Janela
 janela = tk.Tk()
 janela.title(f'Maintence {version}')
 
-# Definindo altura x largura
-largura = 250
-altura = 300
+# Fontes personalizadas
+fonte_titulo = Font(family="Segoe UI", size=11, weight="normal")
+fonte_info = Font(family="Segoe UI", size=9, weight="normal")
+fonte_botao = Font(family="Segoe UI", size=10, weight="normal")
 
-# Centralizando a janela em referencia a tela do computador do usuario
-# Obtém as dimensões da tela
-largura_tela = janela.winfo_screenwidth()
-altura_tela = janela.winfo_screenheight()
-
-# Calcula as coordenadas x e y para centralizar a janela
-x = (largura_tela - largura) // 2
-y = (altura_tela - altura) // 2
-
-# Define a geometria da janela para centralizá-la
-janela.geometry(f"{largura}x{altura}+{x}+{y-150}")
 
 # Impedir o usuário de redimensionar a janela
 janela.resizable(width=False, height=False)
 
 # Label para escolher a unidade
-principal = tk.Label(janela, text='Escolha uma unidade').pack(pady=10)
+principal = tk.Label(janela, text='Escolha uma unidade', font=fonte_titulo).pack(pady=10)
 unidade_var = caixa_selecoes_unidades()
 
 # label principal das infos que surgirão
 # label para o titulo referente das informações
-titulo_label_info = tk.Label(janela, text='')
+titulo_label_info = tk.Label(janela, text='Status', font=fonte_titulo)
+titulo_label_info.pack()
 # Label para exibir informações
-info_label = tk.Label(janela, text='')
-info_label.pack(pady=10)
+info_label = tk.Label(janela, text='', font=fonte_info)
+info_label.pack()
 
 # Botão para verificar o armazenamento da unidade selecionada
-botao_armazenamento = tk.Button(janela, text='Armazenamento', command=lambda: trhead_geral(verificar_armazenamento(unidade_var, info_label)))
+botao_armazenamento = tk.Button(janela, text='Armazenamento', font=fonte_botao, command=lambda: trhead_geral(verificar_armazenamento(unidade_var, info_label)))
 botao_armazenamento.pack(pady=10)
 
 # Botão para acessar o gerenciador de disco - diskmgmt.msc
-botao_gerenciador = tk.Button(janela, text='Gerenciador', command=lambda: trhead_geral(gerenciamento_disco))
+botao_gerenciador = tk.Button(janela, text='Gerenciador',font=fonte_botao, command=lambda: trhead_geral(gerenciamento_disco))
 botao_gerenciador.pack(pady=10)
 
 # Botão para fazer uma limpeza de disco - cleanmgr.exe
-botao_limpeza_disco = tk.Button(janela, text='Limpeza de Disco', command=lambda: trhead_geral(limpeza_disco(unidade_var, info_label)))
+botao_limpeza_disco = tk.Button(janela, text='Limpeza de Disco',font=fonte_botao, command=lambda: trhead_geral(limpeza_disco(unidade_var, info_label)))
 botao_limpeza_disco.pack(pady=10)
 
+
+ajustar_janela_ao_conteudo(janela)
 janela.mainloop()
