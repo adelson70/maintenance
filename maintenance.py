@@ -7,8 +7,9 @@ import subprocess
 from os import system
 import psutil
 import threading
+from time import sleep
 
-version = '1.0'
+version = '1.1'
 
 # Função para ajustar a janela principal conforme o conteudo que estiver nela
 def ajustar_janela_ao_conteudo(root):
@@ -27,6 +28,9 @@ def ajustar_janela_ao_conteudo(root):
     # Define a geometria da janela
     root.geometry(f"{largura+100}x{altura}+{x_pos}+{y_pos-130}")
 
+# Função de espera
+def esperar(tempo=3):
+    sleep(tempo)
 
 # Função para encontrar as unidades locais
 def obter_unidades():
@@ -101,6 +105,8 @@ def limpeza_disco(unidade,label):
         label_info = label
         info = f'Limpeza da Unidade {unidade} foi concluída!'
         atualizar_label(label_info,info)
+        esperar(5)
+        atualizar_label(label_info,'')
         
     except:
         messagebox.showerror('Unidade não selecionada','Você não selecionou nenhuma unidade!')
