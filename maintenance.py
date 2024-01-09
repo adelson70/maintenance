@@ -85,6 +85,20 @@ def verificar_armazenamento(unidade_var, label_info):
     except FileNotFoundError:
         messagebox.showerror('Unidade não selecionada','Você não selecionou nenhuma unidade!')
 
+# Função que ira chamar o ultilitario do windows para fazer a verificação de disco
+def verificar_disco(unidade, label_info):
+    unidade = unidade.get()
+
+    try:
+        # Apenas para tratamento de erro
+        disco = psutil.disk_usage(unidade)
+
+        atualizar_label(label_info, f'Verificando Unidade {disco}')
+
+    except:
+        messagebox.showerror('Unidade não selecionada','Você não selecionou nenhuma unidade!')
+
+
 # Função que ira chamar o serviço do windows de limpeza de disco
 def limpeza_disco(unidade,label):
     global titulo_label_info
@@ -187,6 +201,9 @@ botao_gerenciador.pack(pady=10)
 botao_limpeza_disco = tk.Button(janela, text='Limpeza de Disco',font=fonte_botao, command=lambda: trhead_geral(limpeza_disco(unidade_var, info_label)))
 botao_limpeza_disco.pack(pady=10)
 
+# Botão para fazer a verificação de disco
+botao_verificacao_disco = tk.Button(janela, text='Verificar Disco', font=fonte_botao, command=lambda: trhead_geral(verificar_disco(unidade_var, info_label)))
+botao_verificacao_disco.pack(pady=10)
 
 ajustar_janela_ao_conteudo(janela)
 janela.mainloop()
