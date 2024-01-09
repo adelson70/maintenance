@@ -10,7 +10,6 @@ import psutil
 import threading
 from time import sleep
 import ctypes
-import pyautogui
 
 version = '1.1'
 
@@ -111,15 +110,15 @@ def verificar_disco(unidade, label_info):
         
         atualizar_label(label_info, f'Verificando Unidade {unidade}')
 
-        comando_chkdsk = f'chkdsk {unidade} /f /r'
+        comando_chkdsk = f'chkdsk {unidade} /f /r /x'
 
         # Execute o comando usando subprocess.run()
-        subprocess.run(comando_chkdsk, shell=True, check=True)
-
-        pyautogui.write('Y')
-        pyautogui.press('enter')
+        subprocess.run(comando_chkdsk, shell=True)
+        atualizar_label(label_info,f'Verificação Agendada')
+        esperar(15)
+        atualizar_label(label_info,'')
+        system('cls')
         
-
     except FileNotFoundError:
         messagebox.showerror('Unidade não selecionada','Você não selecionou nenhuma unidade!')
 
