@@ -118,12 +118,9 @@ def verificar_disco(unidade, label_info):
 
         # Execute o comando usando subprocess.run()
         subprocess.run(comando_chkdsk, shell=True)
-        atualizar_label(label_info,f'Verificação Agendada')
-        esperar()
         limpar_console()
-        esperar(5)
         atualizar_label(label_info,'')
-        limpar_console()
+        messagebox.showinfo('Verificação Agendada',f'Verificação do Disco {unidade} foi agendada para próxima reinicialização')
         
     except FileNotFoundError:
         messagebox.showerror('Unidade não selecionada','Você não selecionou nenhuma unidade!')
