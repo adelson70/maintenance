@@ -5,11 +5,25 @@ from tkinter.font import Font
 from tkinter import messagebox
 import subprocess
 from os import system
+import sys
 import psutil
 import threading
 from time import sleep
+import ctypes
 
 version = '1.1'
+
+# Função que ira verificar se o programa possui privilegios de administrador
+def is_admin():
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin()
+    except:
+        return False
+
+# Se não possuir ira pedir reiniciar o programa e ira pedir as credenciais
+if is_admin() != True:
+    ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
+
 
 # Função para ajustar a janela principal conforme o conteudo que estiver nela
 def ajustar_janela_ao_conteudo(root):
@@ -87,13 +101,18 @@ def verificar_armazenamento(unidade_var, label_info):
 
 # Função que ira chamar o ultilitario do windows para fazer a verificação de disco
 def verificar_disco(unidade, label_info):
-    unidade = unidade.get()
+    unidade = unidade.get()[:2]
 
     try:
         # Apenas para tratamento de erro
         disco = psutil.disk_usage(unidade)
+        
+        atualizar_label(label_info, f'Verificando Unidade {unidade}')
 
-        atualizar_label(label_info, f'Verificando Unidade {disco}')
+        comando_chkdsk = f'runas /user:Administrator "chkdsk {unidade} /f /r"'
+
+        # subprocess.Popen(comando_chkdsk, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        system(comando_chkdsk)
 
     except:
         messagebox.showerror('Unidade não selecionada','Você não selecionou nenhuma unidade!')
