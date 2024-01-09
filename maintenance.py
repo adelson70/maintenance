@@ -10,6 +10,7 @@ import psutil
 import threading
 from time import sleep
 import ctypes
+import pyautogui
 
 version = '1.1'
 
@@ -23,6 +24,7 @@ def is_admin():
 # Se não possuir ira pedir reiniciar o programa e ira pedir as credenciais
 if is_admin() != True:
     ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
+    sys.exit()
 
 
 # Função para ajustar a janela principal conforme o conteudo que estiver nela
@@ -109,12 +111,16 @@ def verificar_disco(unidade, label_info):
         
         atualizar_label(label_info, f'Verificando Unidade {unidade}')
 
-        comando_chkdsk = f'runas /user:Administrator "chkdsk {unidade} /f /r"'
+        comando_chkdsk = f'chkdsk {unidade} /f /r'
 
-        # subprocess.Popen(comando_chkdsk, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        system(comando_chkdsk)
+        # Execute o comando usando subprocess.run()
+        subprocess.run(comando_chkdsk, shell=True, check=True)
 
-    except:
+        pyautogui.write('Y')
+        pyautogui.press('enter')
+        
+
+    except FileNotFoundError:
         messagebox.showerror('Unidade não selecionada','Você não selecionou nenhuma unidade!')
 
 
@@ -141,7 +147,7 @@ def limpeza_disco(unidade,label):
         esperar(5)
         atualizar_label(label_info,'')
         
-    except:
+    except FileNotFoundError:
         messagebox.showerror('Unidade não selecionada','Você não selecionou nenhuma unidade!')
 
 
