@@ -47,6 +47,10 @@ def ajustar_janela_ao_conteudo(root):
 def esperar(tempo=3):
     sleep(tempo)
 
+# Função para limpar console
+def limpar_console(command='cls'):
+    system(command)
+
 # Função para encontrar as unidades locais
 def obter_unidades():
     unidades = psutil.disk_partitions()
@@ -115,9 +119,11 @@ def verificar_disco(unidade, label_info):
         # Execute o comando usando subprocess.run()
         subprocess.run(comando_chkdsk, shell=True)
         atualizar_label(label_info,f'Verificação Agendada')
-        esperar(15)
+        esperar()
+        limpar_console()
+        esperar(5)
         atualizar_label(label_info,'')
-        system('cls')
+        limpar_console()
         
     except FileNotFoundError:
         messagebox.showerror('Unidade não selecionada','Você não selecionou nenhuma unidade!')
